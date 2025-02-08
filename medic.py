@@ -18,6 +18,7 @@ chat_css = """
     border-radius: 8px;
     margin: 5px;
     text-align: right;
+    color : white;
 }
 .chatbot-box {
     background-color: #0B0B0B; /* light red/pink */
@@ -25,6 +26,7 @@ chat_css = """
     border-radius: 8px;
     margin: 5px;
     text-align: left;
+    color : white;
 }
 </style>
 """
