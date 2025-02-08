@@ -76,7 +76,7 @@ if st.button("Send"):
         # Generate the chatbot response using the user's input
         response = client.models.generate_content(
             model='gemini-2.0-flash',
-            config=types.GenerateContentConfig(system_instruction=sys_instruction, max_output_tokens = 500),
+            config=types.GenerateContentConfig(system_instruction=sys_instruction, max_output_tokens = 200, temperature = 0.5),
             contents=[user_input]
         )
         chatbot_response = response.text if hasattr(response, "text") else "Sorry, I couldn't generate a response."
