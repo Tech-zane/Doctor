@@ -103,4 +103,21 @@ with st.form("chat_form"):
                 
         except Exception as e:
             st.error(f"API Error: {str(e)}")
-            manage_conversation("chatbot", "Apologies
+            manage_conversation("chatbot", "Apologies, I'm experiencing technical difficulties. Please try again later.")
+        
+        st.rerun()
+
+# Enhanced auto-scroll
+components.html(
+    """
+    <script>
+    function scrollToBottom() {
+        var element = document.getElementById('end-of-chat');
+        if (element) element.scrollIntoView({behavior: 'smooth', block: 'end'});
+    }
+    window.addEventListener('load', scrollToBottom);
+    window.addEventListener('DOMContentLoaded', scrollToBottom);
+    </script>
+    """,
+    height=0
+)
