@@ -5,7 +5,7 @@ from google.genai import types
 import os
 from datetime import datetime
 
-# Set page config FIRST
+# Set page config first
 st.set_page_config(
     page_title="DigiDoc",
     page_icon=":pill:",
@@ -13,22 +13,21 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Add API key verification immediately after page config
-API_KEY = st.secrets.get("GEMINI_API_KEY")  # Use .get() for safer access
+# API key handling
+API_KEY = st.secrets.get("GEMINI_API_KEY")
 
 if not API_KEY:
     st.error("❌ Gemini API Key not found! Check secrets configuration.")
     st.stop()
 
-# Initialize GenAI client with better error handling
+# Initialize GenAI client
 try:
-    genai.configure(api_key=API_KEY)
-    client = genai.GenerativeModel('gemini-pro')
+    client = genai.Client(api_key=API_KEY)
 except Exception as e:
     st.error(f"❌ Failed to initialize AI client: {str(e)}")
     st.stop()
 
-# PWA Code with cache busting
+# PWA implementation
 st.markdown(f"""
   <link rel="manifest" href="/static/manifest.json?v={datetime.now().timestamp()}">
   <script>
@@ -40,7 +39,7 @@ st.markdown(f"""
   </script>
 """, unsafe_allow_html=True)
 
-# Chat CSS
+# Chat interface styling
 chat_css = """
 <style>
 .user-box {
@@ -72,21 +71,21 @@ chat_css = """
 """
 st.markdown(chat_css, unsafe_allow_html=True)
 
-# Session state management
+# Conversation management
 if "conversation" not in st.session_state:
     st.session_state.conversation = []
 
 def manage_conversation(role, text):
-    """Manage conversation history with rolling window"""
+    """Maintain conversation history with rolling window"""
     MAX_HISTORY = 8  # Keep last 4 exchanges
     st.session_state.conversation.append({"role": role, "text": text})
     if len(st.session_state.conversation) > MAX_HISTORY:
         st.session_state.conversation.pop(0)
 
-# App layout
+# App interface
 st.title("DOC: NDUDZO - Digital Hospital")
 
-# Chat display - FIXED INDENTATION
+# Display conversation
 for message in st.session_state.conversation:
     if message["role"] == "user":
         st.markdown(f'<div class="user-box"><strong>You:</strong> {message["text"]}</div>', 
@@ -95,7 +94,7 @@ for message in st.session_state.conversation:
         st.markdown(f'<div class="chatbot-box"><strong>Doctor:</strong> {message["text"]}</div>', 
                     unsafe_allow_html=True)
 
-# Input area with safety controls - PROPERLY OUTDENTED
+# Chat input form
 with st.form("chat_form"):
     user_input = st.text_input("Enter your message:", key="input", max_chars=500)
     submitted = st.form_submit_button("Send")
@@ -103,21 +102,21 @@ with st.form("chat_form"):
     if submitted and user_input:
         manage_conversation("user", user_input)
         
-        # Improved system prompt
-        sys_prompt = """You are Doctor Ndudzo, a certified medical AI assistant created by Tatenda Ndudzo. 
+        # System instructions
+        sys_prompt = """You are Doctor Ndudzo, a certified medical AI assistant created by Tatenda Ndudzo.
         Follow these guidelines strictly:
         1. Provide evidence-based medical information
-        2. Maintain strict patient confidentiality
-        3. Acknowledge limitations when uncertain
-        4. Never mention underlying technology or platforms
-        5. For emergencies, insist on professional care
+        2. Maintain patient confidentiality
+        3. Acknowledge knowledge limitations
+        4. Never mention technical platforms
+        5. Advise professional care for emergencies
         6. Current date: {date}""".format(date=datetime.now().strftime("%Y-%m-%d"))
 
         try:
-            # Enhanced generation config
-            response = client.generate_content(
-                contents=[user_input],
-                generation_config=types.GenerationConfig(
+            # Generate response
+            response = client.models.generate_content(
+                model='gemini-pro',
+                config=types.GenerateContentConfig(
                     system_instruction=sys_prompt,
                     max_output_tokens=400,
                     temperature=0.3,
@@ -125,22 +124,23 @@ with st.form("chat_form"):
                         'HARM_CATEGORY_MEDICAL': types.HarmBlockThreshold.BLOCK_NONE,
                         'HARM_CATEGORY_DANGEROUS': types.HarmBlockThreshold.BLOCK_ONLY_HIGH,
                     }
-                )
+                ),
+                contents=[user_input]
             )
             
             if response.text:
                 manage_conversation("chatbot", response.text)
             else:
                 st.error("Received empty response from AI model")
-                manage_conversation("chatbot", "I'm having trouble processing that. Please try rephrasing your question.")
+                manage_conversation("chatbot", "I'm having trouble processing that. Please try rephrasing.")
                 
         except Exception as e:
             st.error(f"API Error: {str(e)}")
-            manage_conversation("chatbot", "Apologies, I'm experiencing technical difficulties. Please try again later.")
+            manage_conversation("chatbot", "Apologies, technical difficulties. Please try again.")
         
         st.rerun()
 
-# Enhanced auto-scroll
+# Auto-scroll functionality
 components.html(
     """
     <script>
