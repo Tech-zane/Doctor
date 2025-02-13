@@ -22,7 +22,7 @@ if not API_KEY:
 
 # Initialize GenAI client
 try:
-    client = genai.Client(api_key=API_KEY)
+    client = genai.Client(api_key="AIzaSyAKrjlFMQQxVyyqe_i1wcvWM4JVGCZ_X4E")
 except Exception as e:
     st.error(f"❌ Failed to initialize AI client: {str(e)}")
     st.stop()
