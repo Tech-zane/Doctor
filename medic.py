@@ -9,7 +9,7 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Set page config first
+# Set page configuration
 st.set_page_config(
     page_title="DigiDoc",
     page_icon=":pill:",
@@ -176,77 +176,10 @@ Guidelines:
                         temperature=0.35,
                         safety_settings=[
                             types.SafetySetting(
-                                category=types.HarmCategory.HARM_CATEGORY_MEDICAL,
+                                category="HARM_CATEGORY_MEDICAL",
                                 threshold=types.HarmBlockThreshold.BLOCK_NONE
                             ),
                             types.SafetySetting(
-                                category=types.HarmCategory.HARM_CATEGORY_DANGEROUS,
+                                category="HARM_CATEGORY_DANGEROUS",
                                 threshold=types.HarmBlockThreshold.BLOCK_NONE
-                            ),
-                            types.SafetySetting(
-                                category=types.HarmCategory.HARM_CATEGORY_HARASSMENT,
-                                threshold=types.HarmBlockThreshold.BLOCK_NONE
-                            ),
-                            types.SafetySetting(
-                                category=types.HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-                                threshold=types.HarmBlockThreshold.BLOCK_NONE
-                            ),
-                            types.SafetySetting(
-                                category=types.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-                                threshold=types.HarmBlockThreshold.BLOCK_NONE
-                            ),
-                        ]
-                    ),
-                    contents=conversation_context
-                )
-                
-                if response and response.text:
-                    manage_conversation("chatbot", response.text)
-                else:
-                    error_msg = "Received empty response from API"
-                    st.error(error_msg)
-                    manage_conversation("chatbot", "I couldn't process that request")
-                    
-            except Exception as e:
-                logger.error(f"API Error: {str(e)}")
-                st.error(f"API Error Details: {str(e)}")
-                manage_conversation("chatbot", "Technical issue - please try again")
-            
-            st.experimental_rerun()
-            
-        except Exception as e:
-            logger.error(f"Chat processing failed: {str(e)}")
-            st.error("Critical system error - please refresh the page")
-
-# ----------------------
-# AUTO-SCROLL MECHANISM
-# ----------------------
-components.html(
-    """
-    <script>
-    function scrollToBottom() {
-        const container = document.querySelector('.stApp');
-        if (container) container.scrollTop = container.scrollHeight;
-    }
-    window.addEventListener('load', scrollToBottom);
-    document.addEventListener('DOMContentLoaded', scrollToBottom);
-    </script>
-    """,
-    height=0
-)
-
-# ----------------------
-# DIAGNOSTIC PANEL
-# ----------------------
-with st.expander("⚙️ System Diagnostics", expanded=False):
-    st.write("### API Status")
-    st.json({
-        "api_connected": bool(client),
-        "model": "gemini-2.0-flash",
-        "last_update": datetime.now().isoformat(),
-        "messages_in_history": len(st.session_state.conversation)
-    })
     
-    if st.button("🔄 Clear Conversation History"):
-        st.session_state.conversation = []
-        st.experimental_rerun()
