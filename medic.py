@@ -27,7 +27,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Initialize GenAI client securely (use environment variables)
-API_KEY = os.getenv("GEMINI_API_KEY")  # Move to secrets.toml
+API_KEY = st.secrets["GEMINI_API_KEY"]  # Move to secrets.toml
 client = genai.Client(api_key=API_KEY)
 
 # Enhanced chat CSS with responsive design
