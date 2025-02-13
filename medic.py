@@ -115,10 +115,10 @@ with st.form("chat_form"):
         try:
             # Generate response
             response = client.models.generate_content(
-                model='gemini-pro',
+                model='gemini-2.0-flash',
                 config=types.GenerateContentConfig(
                     system_instruction=sys_prompt,
-                    max_output_tokens=400,
+                    max_output_tokens=250,
                     temperature=0.3,
                     safety_settings={
                         'HARM_CATEGORY_MEDICAL': types.HarmBlockThreshold.BLOCK_NONE,
