@@ -10,7 +10,7 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Set page config first
+# Set page configuration
 st.set_page_config(
     page_title="DigiDoc",
     page_icon=":pill:",
@@ -100,17 +100,14 @@ if "conversation" not in st.session_state:
     logger.info("Conversation history initialized")
 
 def manage_conversation(role, text):
-    """Maintain conversation history with rolling window"""
+    """Maintain conversation history with a rolling window."""
     try:
-        MAX_HISTORY = 10  # Keep last 5 exchanges
+        MAX_HISTORY = 10  # Keep the last 10 messages total
         st.session_state.conversation.append({"role": role, "text": text})
-        
-        # Maintain conversation length
+        # Trim conversation if it exceeds MAX_HISTORY
         while len(st.session_state.conversation) > MAX_HISTORY:
             st.session_state.conversation.pop(0)
-            
         logger.debug(f"Conversation updated: {len(st.session_state.conversation)} messages")
-        
     except Exception as e:
         logger.error(f"Conversation error: {str(e)}")
         st.error("Failed to update conversation history")
@@ -153,17 +150,24 @@ with st.form("chat_form", clear_on_submit=True):
             manage_conversation("user", user_input)
             
             # ----------------------
+            # BUILD CONVERSATION CONTEXT
+            # ----------------------
+            conversation_context = "\n".join(
+                [f"{msg['role'].capitalize()}: {msg['text']}" for msg in st.session_state.conversation]
+            )
+            
+            # ----------------------
             # AI RESPONSE GENERATION
             # ----------------------
             sys_prompt = f"""You are Doctor Ndudzo, an advanced medical AI assistant.
-            Current Date: {datetime.now().strftime("%Y-%m-%d %H:%M")}
-            Guidelines:
-            1. Provide evidence-based medical information
-            2. Maintain strict patient confidentiality
-            3. Clearly state limitations when uncertain
-            4. Use simple, non-technical language
-            5. For emergencies, insist on professional care
-            6. Respond in compassionate, professional tone"""
+Current Date: {datetime.now().strftime("%Y-%m-%d %H:%M")}
+Guidelines:
+1. Provide evidence-based medical information.
+2. Maintain strict patient confidentiality.
+3. Clearly state limitations when uncertain.
+4. Use simple, non-technical language.
+5. For emergencies, insist on professional care.
+6. Respond in a compassionate, professional tone."""
             
             try:
                 response = client.models.generate_content(
@@ -172,29 +176,22 @@ with st.form("chat_form", clear_on_submit=True):
                         system_instruction=sys_prompt,
                         max_output_tokens=1024,
                         temperature=0.35,
-                        safety_settings={
-                            category: types.HarmBlockThreshold.BLOCK_NONE
-                            for category in [
-                                'HARM_CATEGORY_MEDICAL',
-                                'HARM_CATEGORY_DANGEROUS',
-                                'HARM_CATEGORY_HARASSMENT',
-                                'HARM_CATEGORY_HATE_SPEECH',
-                                'HARM_CATEGORY_SEXUALLY_EXPLICIT'
-                            ]
-                        }
+                        safety_settings=[
+                            types.SafetySetting(category='HARM_CATEGORY_MEDICAL', threshold=types.HarmBlockThreshold.BLOCK_NONE),
+                            types.SafetySetting(category='HARM_CATEGORY_DANGEROUS', threshold=types.HarmBlockThreshold.BLOCK_NONE),
+                            types.SafetySetting(category='HARM_CATEGORY_HARASSMENT', threshold=types.HarmBlockThreshold.BLOCK_NONE),
+                            types.SafetySetting(category='HARM_CATEGORY_HATE_SPEECH', threshold=types.HarmBlockThreshold.BLOCK_NONE),
+                            types.SafetySetting(category='HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold=types.HarmBlockThreshold.BLOCK_NONE),
+                        ]
                     ),
-                    contents=[{
-                        "role": "user",
-                        "parts": [{"text": user_input}]
-                    }]
+                    # Provide the entire conversation context as a single string
+                    contents=conversation_context
                 )
                 
                 if response and response.text:
                     manage_conversation("chatbot", response.text)
                 else:
                     error_msg = "Received empty response from API"
-                    if response.prompt_feedback.block_reason:
-                        error_msg += f" | Block reason: {response.prompt_feedback}"
                     st.error(error_msg)
                     manage_conversation("chatbot", "I couldn't process that request")
                     
@@ -203,7 +200,7 @@ with st.form("chat_form", clear_on_submit=True):
                 st.error(f"API Error Details: {str(e)}")
                 manage_conversation("chatbot", "Technical issue - please try again")
             
-            st.rerun()
+            st.experimental_rerun()
             
         except Exception as e:
             logger.error(f"Chat processing failed: {str(e)}")
@@ -240,4 +237,4 @@ with st.expander("⚙️ System Diagnostics", expanded=False):
     
     if st.button("🔄 Clear Conversation History"):
         st.session_state.conversation = []
-        st.rerun()
+        st.experimental_rerun()
