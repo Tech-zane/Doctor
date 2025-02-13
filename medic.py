@@ -110,10 +110,7 @@ if submitted and user_input:
     # Generate AI Response
     try:
         model = genai.GenerativeModel("gemini-2.0-flash")
-        response = model.generate_content(
-            config = types.GenerateContentConfig(system_instruction = sys_prompt),
-            contents=[user_input]
-        )
+        response = model.generate_content(user_input)
 
         if hasattr(response, "text"):
             chatbot_response = response.text
