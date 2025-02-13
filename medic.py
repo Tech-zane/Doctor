@@ -167,7 +167,7 @@ with st.form("chat_form", clear_on_submit=True):
             
             try:
                 response = client.models.generate_content(
-                    model='gemini-1.5-flash',
+                    model='gemini-2.0-flash',
                     config=types.GenerateContentConfig(
                         system_instruction=sys_prompt,
                         max_output_tokens=1024,
@@ -233,7 +233,7 @@ with st.expander("⚙️ System Diagnostics", expanded=False):
     st.write("### API Status")
     st.json({
         "api_connected": bool(client),
-        "model": "gemini-1.5-flash",
+        "model": "gemini-2.0-flash",
         "last_update": datetime.now().isoformat(),
         "messages_in_history": len(st.session_state.conversation)
     })
