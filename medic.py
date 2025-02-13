@@ -4,7 +4,14 @@ from google import genai
 from google.genai import types
 import os  # Added for environment variables
 
-# Correct PWA injection with proper static paths
+st.set_page_config(
+    page_title="DigiDoc",
+    page_icon=":pill:",
+    layout="centered",
+    initial_sidebar_state="collapsed"
+)
+
+# 2. THEN ADD PWA CODE
 st.markdown("""
   <link rel="manifest" href="/static/manifest.json">
   <script>
@@ -18,14 +25,6 @@ st.markdown("""
     }
   </script>
 """, unsafe_allow_html=True)
-
-# Initialize page config first
-st.set_page_config(
-    page_title="DigiDoc",
-    page_icon=":pill:",
-    layout="centered",
-    initial_sidebar_state="collapsed"
-)
 
 # Initialize GenAI client securely (use environment variables)
 API_KEY = os.getenv("GEMINI_API_KEY")  # Move to secrets.toml
