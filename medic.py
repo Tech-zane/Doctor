@@ -2,7 +2,6 @@ import streamlit as st
 import streamlit.components.v1 as components
 from google import genai
 from google.genai import types
-import os
 from datetime import datetime
 import logging
 
@@ -10,7 +9,7 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Set page configuration
+# Set page config first
 st.set_page_config(
     page_title="DigiDoc",
     page_icon=":pill:",
@@ -104,7 +103,6 @@ def manage_conversation(role, text):
     try:
         MAX_HISTORY = 10  # Keep the last 10 messages total
         st.session_state.conversation.append({"role": role, "text": text})
-        # Trim conversation if it exceeds MAX_HISTORY
         while len(st.session_state.conversation) > MAX_HISTORY:
             st.session_state.conversation.pop(0)
         logger.debug(f"Conversation updated: {len(st.session_state.conversation)} messages")
@@ -177,14 +175,28 @@ Guidelines:
                         max_output_tokens=1024,
                         temperature=0.35,
                         safety_settings=[
-                            types.SafetySetting(category='HARM_CATEGORY_MEDICAL', threshold=types.HarmBlockThreshold.BLOCK_NONE),
-                            types.SafetySetting(category='HARM_CATEGORY_DANGEROUS', threshold=types.HarmBlockThreshold.BLOCK_NONE),
-                            types.SafetySetting(category='HARM_CATEGORY_HARASSMENT', threshold=types.HarmBlockThreshold.BLOCK_NONE),
-                            types.SafetySetting(category='HARM_CATEGORY_HATE_SPEECH', threshold=types.HarmBlockThreshold.BLOCK_NONE),
-                            types.SafetySetting(category='HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold=types.HarmBlockThreshold.BLOCK_NONE),
+                            types.SafetySetting(
+                                category=types.HarmCategory.HARM_CATEGORY_MEDICAL,
+                                threshold=types.HarmBlockThreshold.BLOCK_NONE
+                            ),
+                            types.SafetySetting(
+                                category=types.HarmCategory.HARM_CATEGORY_DANGEROUS,
+                                threshold=types.HarmBlockThreshold.BLOCK_NONE
+                            ),
+                            types.SafetySetting(
+                                category=types.HarmCategory.HARM_CATEGORY_HARASSMENT,
+                                threshold=types.HarmBlockThreshold.BLOCK_NONE
+                            ),
+                            types.SafetySetting(
+                                category=types.HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+                                threshold=types.HarmBlockThreshold.BLOCK_NONE
+                            ),
+                            types.SafetySetting(
+                                category=types.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+                                threshold=types.HarmBlockThreshold.BLOCK_NONE
+                            ),
                         ]
                     ),
-                    # Provide the entire conversation context as a single string
                     contents=conversation_context
                 )
                 
