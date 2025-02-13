@@ -23,7 +23,7 @@ if not API_KEY:
 # Initialize GenAI client with better error handling
 try:
     genai.configure(api_key=API_KEY)
-    client = genai.GenerativeModel('gemini-1.5-pro')
+    client = genai.GenerativeModel('gemini-pro')
 except Exception as e:
     st.error(f"❌ Failed to initialize AI client: {str(e)}")
     st.stop()
@@ -40,10 +40,39 @@ st.markdown(f"""
   </script>
 """, unsafe_allow_html=True)
 
-# Chat CSS (keep your existing styles)
-# ... [keep your existing chat CSS code] ...
+# Chat CSS
+chat_css = """
+<style>
+.user-box {
+    background-color: #0d1b2a;
+    padding: 1rem;
+    border-radius: 15px;
+    margin: 0.5rem 0;
+    max-width: 80%;
+    float: right;
+    clear: both;
+    color: white;
+}
+.chatbot-box {
+    background-color: #0B0B0B;
+    padding: 1rem;
+    border-radius: 15px;
+    margin: 0.5rem 0;
+    max-width: 80%;
+    float: left;
+    clear: both;
+    color: white;
+}
+@media (max-width: 768px) {
+    .user-box, .chatbot-box {
+        max-width: 90%;
+    }
+}
+</style>
+"""
+st.markdown(chat_css, unsafe_allow_html=True)
 
-# Improved conversation management
+# Session state management
 if "conversation" not in st.session_state:
     st.session_state.conversation = []
 
@@ -52,17 +81,21 @@ def manage_conversation(role, text):
     MAX_HISTORY = 8  # Keep last 4 exchanges
     st.session_state.conversation.append({"role": role, "text": text})
     if len(st.session_state.conversation) > MAX_HISTORY:
-        # Remove the oldest message while preserving pair order
         st.session_state.conversation.pop(0)
 
 # App layout
 st.title("DOC: NDUDZO - Digital Hospital")
 
-# Chat display
+# Chat display - FIXED INDENTATION
 for message in st.session_state.conversation:
-    # ... [keep your existing display code] ...
+    if message["role"] == "user":
+        st.markdown(f'<div class="user-box"><strong>You:</strong> {message["text"]}</div>', 
+                    unsafe_allow_html=True)
+    else:
+        st.markdown(f'<div class="chatbot-box"><strong>Doctor:</strong> {message["text"]}</div>', 
+                    unsafe_allow_html=True)
 
-# Enhanced input handling
+# Input area with safety controls - PROPERLY OUTDENTED
 with st.form("chat_form"):
     user_input = st.text_input("Enter your message:", key="input", max_chars=500)
     submitted = st.form_submit_button("Send")
@@ -118,6 +151,7 @@ components.html(
     window.addEventListener('load', scrollToBottom);
     window.addEventListener('DOMContentLoaded', scrollToBottom);
     </script>
+    <div id="end-of-chat"></div>
     """,
     height=0
 )
