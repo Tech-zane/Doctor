@@ -3,6 +3,25 @@ import streamlit.components.v1 as components
 from google import genai
 from google.genai import types
 
+# Inject PWA metadata and service worker registration code.
+st.markdown("""
+  <link rel="manifest" href="/manifest.json">
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/service-worker.js')
+        .then(function(registration) {
+          console.log('ServiceWorker registration successful with scope: ', registration.scope);
+        })
+        .catch(function(err) {
+          console.log('ServiceWorker registration failed: ', err);
+        });
+      });
+    }
+  </script>
+""", unsafe_allow_html=True)
+
+
 ##Site Title and Stuff
 st.set_page_config(page_title="DigiDoc", page_icon=":pill:", layout="centered")
 
