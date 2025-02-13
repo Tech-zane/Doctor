@@ -4,6 +4,11 @@ from google import genai
 from google.genai import types
 import os
 from datetime import datetime
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Set page config first
 st.set_page_config(
@@ -13,145 +18,226 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# API key handling
-API_KEY = st.secrets.get("GEMINI_API_KEY")
-
-if not API_KEY:
-    st.error("❌ Gemini API Key not found! Check secrets configuration.")
+# ----------------------
+# API KEY CONFIGURATION
+# ----------------------
+try:
+    API_KEY = st.secrets["GEMINI_API_KEY"]
+    logger.info("API key loaded successfully")
+except KeyError:
+    st.error("""
+    🔑 Missing API Key Configuration!
+    1. Go to Streamlit Cloud Settings
+    2. Add secret: GEMINI_API_KEY = your-api-key
+    3. Redeploy application
+    """)
     st.stop()
 
-# Initialize GenAI client
+# ----------------------
+# CLIENT INITIALIZATION
+# ----------------------
 try:
     client = genai.Client(api_key=API_KEY)
+    logger.info("GenAI client initialized successfully")
 except Exception as e:
-    st.error(f"❌ Failed to initialize AI client: {str(e)}")
+    st.error(f"❌ Client Initialization Failed: {str(e)}")
     st.stop()
 
-# PWA implementation
+# ----------------------
+# PWA IMPLEMENTATION
+# ----------------------
 st.markdown(f"""
-  <link rel="manifest" href="/static/manifest.json?v={datetime.now().timestamp()}">
-  <script>
-    if ('serviceWorker' in navigator) {{
-      navigator.serviceWorker.register('/static/service-worker.js?v={datetime.now().timestamp()}')
-        .then(reg => console.log('SW registered:', reg.scope))
-        .catch(err => console.error('SW registration failed:', err));
-    }}
-  </script>
+<link rel="manifest" href="/static/manifest.json?v={datetime.now().timestamp()}">
+<script>
+if ('serviceWorker' in navigator) {{
+    navigator.serviceWorker.register('/static/service-worker.js?v={datetime.now().timestamp()}')
+    .then(reg => console.log('Service Worker scope:', reg.scope))
+    .catch(err => console.error('Service Worker error:', err));
+}}
+</script>
 """, unsafe_allow_html=True)
 
-# Chat interface styling
+# ----------------------
+# CHAT INTERFACE STYLING
+# ----------------------
 chat_css = """
 <style>
 .user-box {
-    background-color: #0d1b2a;
-    padding: 1rem;
+    background: #0d1b2a;
+    padding: 1.2rem;
     border-radius: 15px;
-    margin: 0.5rem 0;
+    margin: 1rem 0;
     max-width: 80%;
     float: right;
-    clear: both;
     color: white;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 .chatbot-box {
-    background-color: #0B0B0B;
-    padding: 1rem;
+    background: #1a1a1a;
+    padding: 1.2rem;
     border-radius: 15px;
-    margin: 0.5rem 0;
+    margin: 1rem 0;
     max-width: 80%;
     float: left;
-    clear: both;
     color: white;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 @media (max-width: 768px) {
     .user-box, .chatbot-box {
         max-width: 90%;
+        padding: 1rem;
     }
 }
 </style>
 """
 st.markdown(chat_css, unsafe_allow_html=True)
 
-# Conversation management
+# ----------------------
+# CONVERSATION MANAGEMENT
+# ----------------------
 if "conversation" not in st.session_state:
     st.session_state.conversation = []
+    logger.info("Conversation history initialized")
 
 def manage_conversation(role, text):
     """Maintain conversation history with rolling window"""
-    MAX_HISTORY = 8  # Keep last 4 exchanges
-    st.session_state.conversation.append({"role": role, "text": text})
-    if len(st.session_state.conversation) > MAX_HISTORY:
-        st.session_state.conversation.pop(0)
+    try:
+        MAX_HISTORY = 10  # Keep last 5 exchanges
+        st.session_state.conversation.append({"role": role, "text": text})
+        
+        # Maintain conversation length
+        while len(st.session_state.conversation) > MAX_HISTORY:
+            st.session_state.conversation.pop(0)
+            
+        logger.debug(f"Conversation updated: {len(st.session_state.conversation)} messages")
+        
+    except Exception as e:
+        logger.error(f"Conversation error: {str(e)}")
+        st.error("Failed to update conversation history")
 
-# App interface
-st.title("DOC: NDUDZO - Digital Hospital")
+# ----------------------
+# MAIN APP INTERFACE
+# ----------------------
+st.title("🏥 DOC: NDUDZO - Digital Hospital")
 
-# Display conversation
+# Display conversation history
 for message in st.session_state.conversation:
-    if message["role"] == "user":
-        st.markdown(f'<div class="user-box"><strong>You:</strong> {message["text"]}</div>', 
-                    unsafe_allow_html=True)
-    else:
-        st.markdown(f'<div class="chatbot-box"><strong>Doctor:</strong> {message["text"]}</div>', 
-                    unsafe_allow_html=True)
+    try:
+        if message["role"] == "user":
+            st.markdown(
+                f'<div class="user-box"><strong>You:</strong> {message["text"]}</div>',
+                unsafe_allow_html=True
+            )
+        else:
+            st.markdown(
+                f'<div class="chatbot-box"><strong>Doctor:</strong> {message["text"]}</div>',
+                unsafe_allow_html=True
+            )
+    except KeyError:
+        logger.warning("Invalid message format in conversation history")
 
-# Chat input form
-with st.form("chat_form"):
-    user_input = st.text_input("Enter your message:", key="input", max_chars=500)
-    submitted = st.form_submit_button("Send")
+# ----------------------
+# CHAT INPUT SYSTEM
+# ----------------------
+with st.form("chat_form", clear_on_submit=True):
+    user_input = st.text_input(
+        "Describe your symptoms or ask a question:",
+        key="input",
+        max_chars=500,
+        placeholder="Type your message here..."
+    )
+    submitted = st.form_submit_button("📩 Send")
     
     if submitted and user_input:
-        manage_conversation("user", user_input)
-        
-        # System instructions
-        sys_prompt = """You are Doctor Ndudzo, a certified medical AI assistant created by Tatenda Ndudzo.
-        Follow these guidelines strictly:
-        1. Provide evidence-based medical information
-        2. Maintain patient confidentiality
-        3. Acknowledge knowledge limitations
-        4. Never mention technical platforms
-        5. Advise professional care for emergencies
-        6. Current date: {date}""".format(date=datetime.now().strftime("%Y-%m-%d"))
-
         try:
-            # Generate response
-            response = client.models.generate_content(
-                model='gemini-2.0-flash',
-                config=types.GenerateContentConfig(
-                    system_instruction=sys_prompt,
-                    max_output_tokens=250,
-                    temperature=0.3,
-                    safety_settings={
-                        'HARM_CATEGORY_MEDICAL': types.HarmBlockThreshold.BLOCK_NONE,
-                        'HARM_CATEGORY_DANGEROUS': types.HarmBlockThreshold.BLOCK_ONLY_HIGH,
-                    }
-                ),
-                contents=[user_input]
-            )
+            manage_conversation("user", user_input)
             
-            if response.text:
-                manage_conversation("chatbot", response.text)
-            else:
-                st.error("Received empty response from AI model")
-                manage_conversation("chatbot", "I'm having trouble processing that. Please try rephrasing.")
+            # ----------------------
+            # AI RESPONSE GENERATION
+            # ----------------------
+            sys_prompt = f"""You are Doctor Ndudzo, an advanced medical AI assistant.
+            Current Date: {datetime.now().strftime("%Y-%m-%d %H:%M")}
+            Guidelines:
+            1. Provide evidence-based medical information
+            2. Maintain strict patient confidentiality
+            3. Clearly state limitations when uncertain
+            4. Use simple, non-technical language
+            5. For emergencies, insist on professional care
+            6. Respond in compassionate, professional tone"""
+            
+            try:
+                response = client.models.generate_content(
+                    model='gemini-1.5-flash',
+                    config=types.GenerateContentConfig(
+                        system_instruction=sys_prompt,
+                        max_output_tokens=1024,
+                        temperature=0.35,
+                        safety_settings={
+                            category: types.HarmBlockThreshold.BLOCK_NONE
+                            for category in [
+                                'HARM_CATEGORY_MEDICAL',
+                                'HARM_CATEGORY_DANGEROUS',
+                                'HARM_CATEGORY_HARASSMENT',
+                                'HARM_CATEGORY_HATE_SPEECH',
+                                'HARM_CATEGORY_SEXUALLY_EXPLICIT'
+                            ]
+                        }
+                    ),
+                    contents=[{
+                        "role": "user",
+                        "parts": [{"text": user_input}]
+                    }]
+                )
                 
+                if response and response.text:
+                    manage_conversation("chatbot", response.text)
+                else:
+                    error_msg = "Received empty response from API"
+                    if response.prompt_feedback.block_reason:
+                        error_msg += f" | Block reason: {response.prompt_feedback}"
+                    st.error(error_msg)
+                    manage_conversation("chatbot", "I couldn't process that request")
+                    
+            except Exception as e:
+                logger.error(f"API Error: {str(e)}")
+                st.error(f"API Error Details: {str(e)}")
+                manage_conversation("chatbot", "Technical issue - please try again")
+            
+            st.rerun()
+            
         except Exception as e:
-            st.error(f"API Error: {str(e)}")
-            manage_conversation("chatbot", "Apologies, technical difficulties. Please try again.")
-        
-        st.rerun()
+            logger.error(f"Chat processing failed: {str(e)}")
+            st.error("Critical system error - please refresh the page")
 
-# Auto-scroll functionality
+# ----------------------
+# AUTO-SCROLL MECHANISM
+# ----------------------
 components.html(
     """
     <script>
     function scrollToBottom() {
-        var element = document.getElementById('end-of-chat');
-        if (element) element.scrollIntoView({behavior: 'smooth', block: 'end'});
+        const container = document.querySelector('.stApp');
+        if (container) container.scrollTop = container.scrollHeight;
     }
     window.addEventListener('load', scrollToBottom);
-    window.addEventListener('DOMContentLoaded', scrollToBottom);
+    document.addEventListener('DOMContentLoaded', scrollToBottom);
     </script>
-    <div id="end-of-chat"></div>
     """,
     height=0
 )
+
+# ----------------------
+# DIAGNOSTIC PANEL
+# ----------------------
+with st.expander("⚙️ System Diagnostics", expanded=False):
+    st.write("### API Status")
+    st.json({
+        "api_connected": bool(client),
+        "model": "gemini-1.5-flash",
+        "last_update": datetime.now().isoformat(),
+        "messages_in_history": len(st.session_state.conversation)
+    })
+    
+    if st.button("🔄 Clear Conversation History"):
+        st.session_state.conversation = []
+        st.rerun()
