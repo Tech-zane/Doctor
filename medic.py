@@ -49,6 +49,35 @@ def manage_conversation(role, text):
         st.session_state.conversation.pop(0)
 
 # ----------------------
+# CUSTOM CHAT STYLING
+# ----------------------
+chat_css = """
+<style>
+.user-box {
+    background: #4CAF50; /* Green for user */
+    padding: 1.2rem;
+    border-radius: 15px;
+    margin: 1rem 0;
+    max-width: 70%;
+    float: right;
+    color: white;
+    text-align: right;
+}
+.chatbot-box {
+    background: #2196F3; /* Blue for AI */
+    padding: 1.2rem;
+    border-radius: 15px;
+    margin: 1rem 0;
+    max-width: 70%;
+    float: left;
+    color: white;
+    text-align: left;
+}
+</style>
+"""
+st.markdown(chat_css, unsafe_allow_html=True)
+
+# ----------------------
 # MAIN INTERFACE
 # ----------------------
 st.title("\U0001F3E5 DOC: NDUDZO - Digital Hospital")
