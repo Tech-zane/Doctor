@@ -23,7 +23,7 @@
   ]
   "screenshots": [
   {
-    "src": "/static/screenshot/screenshot1.png",  // Path to your screenshot
+    "src": "/static/screenshot/Screenshot1.png",  // Path to your screenshot
     "sizes": "1918x990", // Example size
     "type": "image/png",  // Or image/jpeg, etc.
     "form_factor": "wide" // or "narrow", as appropriate
