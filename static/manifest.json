@@ -3,19 +3,19 @@
   "name": "DigiDoc - Digital Hospital Chatbot",
   "description": "A medical chatbot to help you with healthcare advice.",
   "start_url": "https://ndudzo.streamlit.app/",
-  "scope": "/",
+  "scope": "/", // Or "/tech-zane/doctor/main/" if you prefer
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#0072B5",  // Changed to a more medical-friendly blue
+  "theme_color": "#0072B5",
   "icons": [
     {
-      "src": "icons/icon-192x192.png",
+      "src": "icons/icon-192x192.png", // Correct (relative to static)
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"  // Added for better Android support
+      "purpose": "any maskable"
     },
     {
-      "src": "icons/icon-512x512.png",
+      "src": "icons/icon-512x512.png", // Correct (relative to static)
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
@@ -23,17 +23,16 @@
   ],
   "screenshots": [
     {
-      "src": "/static/screenshot/Screenshot1.png",  // Path to your screenshot
-      "sizes": "1918x990", // Example size
-      "type": "image/png",  // Or image/jpeg, etc.
-      "form_factor": "wide" // or "narrow", as appropriate
+      "src": "screenshot/Screenshot1.png", // Correct path! (relative to static)
+      "sizes": "1918x990",
+      "type": "image/png",
+      "form_factor": "wide"
     },
-      {
-      "src": "/static/screenshot/screenshot2.png",  // Path to your screenshot
-      "sizes": "553x969", // Example size
-      "type": "image/png",  // Or image/jpeg, etc.
-      "form_factor": "narrow" // or "wide", as appropriate
-    },
-    // ... more screenshots in different sizes and form factors
+    {
+      "src": "screenshot/screenshot2.png", // Correct path! (relative to static)
+      "sizes": "553x969",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
   ]
 }
