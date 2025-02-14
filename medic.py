@@ -172,16 +172,6 @@ if submitted and user_input:
     typing_placeholder.empty()
     display_chat()
 
-# ----------------------
-# SYSTEM DIAGNOSTICS
-# ----------------------
-with st.expander("⚙️ System Diagnostics", expanded=False):
-    st.json({
-        "api_connected": True,
-        "model": "gemini-2.0-flash",
-        "last_update": datetime.now().isoformat(),
-        "messages_in_history": len(st.session_state.conversation)
-    })
 
     if st.button("🔄 Clear Conversation History"):
         st.session_state.conversation = []
