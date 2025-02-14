@@ -1,0 +1,6 @@
+{
+  "name": "DigiDoc",
+  "short_name": "DigiDoc",
+  "start_url": "https://ndudzo.streamlit.app/",
+  "display": "standalone"
+}
