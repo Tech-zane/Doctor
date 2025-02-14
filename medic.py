@@ -173,6 +173,6 @@ if submitted and user_input:
     display_chat()
 
 
-    if st.button("🔄 Clear Conversation History"):
-        st.session_state.conversation = []
-        st.experimental_rerun()  # Keep this for clearing history
+if st.button("🔄 Clear Conversation History"):
+     st.session_state.conversation = []
+     st.experimental_rerun()  # Keep this for clearing history
