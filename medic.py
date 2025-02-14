@@ -82,12 +82,13 @@ st.markdown(chat_css, unsafe_allow_html=True)
 # ----------------------
 st.title("\U0001F3E5 DOC: NDUDZO - Digital Hospital")
 
-# Display Chat History
-for message in st.session_state.conversation:
+# Display Chat History (reversed for better flow)
+for message in reversed(st.session_state.conversation):  # Reverse the order
     if message["role"] == "user":
         st.markdown(f'<div class="user-box"><strong>You:</strong> {message["text"]}</div>', unsafe_allow_html=True)
     else:
         st.markdown(f'<div class="chatbot-box"><strong>Doctor:</strong> {message["text"]}</div>', unsafe_allow_html=True)
+
 
 # ----------------------
 # CHAT INPUT SYSTEM
@@ -112,12 +113,11 @@ if submitted and user_input:
     """
 
     try:
-        # Use the correct method from the API documentation
         response = client.models.generate_content(
             model="gemini-2.0-flash",
             contents=[sys_prompt, user_input]
         )
-        
+
         chatbot_response = response.text if hasattr(response, "text") else "I couldn't process that request. Please try again."
         manage_conversation("chatbot", chatbot_response)
     except Exception as e:
