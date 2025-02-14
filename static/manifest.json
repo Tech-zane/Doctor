@@ -2,7 +2,7 @@
   "short_name": "DigiDoc",
   "name": "DigiDoc - Digital Hospital Chatbot",
   "description": "A medical chatbot to help you with healthcare advice.",
-  "start_url": "/",
+  "start_url": "https://ndudzo.streamlit.app/",
   "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
