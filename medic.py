@@ -62,7 +62,7 @@ st.markdown(chat_css, unsafe_allow_html=True)
 
 # Inject manifest.json into HTML
 manifest_html = """
-<link rel="manifest" href="/static/manifest.json">
+<link rel="manifest" href="manifest.json">
 """
 st.markdown(manifest_html, unsafe_allow_html=True)
 
@@ -71,7 +71,7 @@ sw_js = """
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/static/service-worker.js')
+      navigator.serviceWorker.register('service-worker.js')
         .then(reg => console.log("Service Worker Registered!"))
         .catch(err => console.log("Service Worker Registration Failed:", err));
     });
@@ -133,11 +133,7 @@ if submitted and user_input:
             [sys_prompt, user_input]
         )
 
-        if hasattr(response, "text"):
-            chatbot_response = response.text
-        else:
-            chatbot_response = "I couldn't process that request. Please try again."
-
+        chatbot_response = response.text if hasattr(response, "text") else "I couldn't process that request. Please try again."
         manage_conversation("chatbot", chatbot_response)
     except Exception as e:
         logger.error(f"❌ API Error: {str(e)}")
