@@ -21,4 +21,19 @@
       "purpose": "any maskable"
     }
   ]
+  "screenshots": [
+  {
+    "src": "/static/screenshot/screenshot1.png",  // Path to your screenshot
+    "sizes": "1280x720", // Example size
+    "type": "image/png",  // Or image/jpeg, etc.
+    "form_factor": "wide" // or "narrow", as appropriate
+  },
+    {
+    "src": "/static/screenshot/screenshot2.png",  // Path to your screenshot
+    "sizes": "640x480", // Example size
+    "type": "image/png",  // Or image/jpeg, etc.
+    "form_factor": "narrow" // or "wide", as appropriate
+  },
+  // ... more screenshots in different sizes and form factors
+]
 }
