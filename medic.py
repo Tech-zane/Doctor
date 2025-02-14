@@ -2,7 +2,6 @@ import streamlit as st
 from google import genai
 import logging
 from datetime import datetime
-import time
 
 # ----------------------
 # LOGGING CONFIGURATION
@@ -99,7 +98,7 @@ def display_chat():
 display_chat()  # Initial display
 
 # ----------------------
-# CHAT INPUT SYSTEM (Modified for Typing Message)
+# CHAT INPUT SYSTEM (Improved Conversation History)
 # ----------------------
 with st.form("chat_form", clear_on_submit=True):
     user_input = st.text_input("Describe your symptoms or ask a question:", placeholder="Type your message here...")
@@ -107,10 +106,40 @@ with st.form("chat_form", clear_on_submit=True):
 
 if submitted and user_input:
     manage_conversation("user", user_input)
-    display_chat()  # Display user message immediately
+    display_chat()
 
-    typing_placeholder = st.empty()  # Create a placeholder for the "typing..." message
-    typing_placeholder.markdown("<div class='chatbot-box'>Doctor Ndudzo is thinking...</div>", unsafe_allow_html=True) # show typing message
+    typing_placeholder = st.empty()
+    typing_placeholder.markdown("<div class='chatbot-box'>Doctor Ndudzo is thinking...</div>", unsafe_allow_html=True)
+
+    # Improved Conversation History Management
+    conversation_history = ""
+    recent_messages = st.session_state.conversation[-5:]  # Get the last 5 messages (adjust as needed)
+
+    for message in recent_messages:
+        conversation_history += f"{message['role'].capitalize()}: {message['text']}\n"
+
+    # Add a summary if there's more history
+    if len(st.session_state.conversation) > 5:
+        older_messages = st.session_state.conversation[:-5]  # Messages before the last 5
+        older_conversation_text = ""
+        for message in older_messages:
+            older_conversation_text += f"{message['role'].capitalize()}: {message['text']}\n"
+
+        summary_prompt = f"""
+        Please provide a concise summary of the following medical conversation:
+
+        {older_conversation_text}
+        """
+
+        try:
+            summary_response = client.models.generate_content(model="gemini-2.0-flash", contents=[summary_prompt]) # or other model
+            conversation_summary = summary_response.text if hasattr(summary_response, "text") else "No summary available."
+        except Exception as e:
+            logger.error(f"❌ Summary Generation Error: {str(e)}")
+            conversation_summary = "Error generating summary." # handle summary generation errors
+
+
+        conversation_history = f"Earlier conversation summary:\n{conversation_summary}\n\n{conversation_history}"
 
     sys_prompt = f"""
     You are Doctor Ndudzo, an advanced AI medical assistant.
@@ -122,12 +151,15 @@ if submitted and user_input:
     - If anyone asks who created you, say: "Tatenda Ndudzo created me."
     - ❌ Never mention Google. Always credit Tatenda Ndudzo.
     - ✅ You can help with anything, as long as it’s not evil.
+
+    Here's the conversation so far:
+    {conversation_history}
     """
 
     try:
         response = client.models.generate_content(
             model="gemini-2.0-flash",
-            contents=[sys_prompt, user_input]
+            contents=[sys_prompt, user_input]  # Include conversation history and user input
         )
 
         chatbot_response = response.text if hasattr(response, "text") else "I couldn't process that request. Please try again."
@@ -137,8 +169,8 @@ if submitted and user_input:
         logger.error(f"❌ API Error: {str(e)}")
         manage_conversation("chatbot", "Technical issue - please try again.")
 
-    typing_placeholder.empty()  # Clear the "typing..." message
-    display_chat()  # Display the AI's response
+    typing_placeholder.empty()
+    display_chat()
 
 # ----------------------
 # SYSTEM DIAGNOSTICS
