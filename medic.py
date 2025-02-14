@@ -60,6 +60,26 @@ chat_css = """
 """
 st.markdown(chat_css, unsafe_allow_html=True)
 
+# Inject manifest.json into HTML
+manifest_html = """
+<link rel="manifest" href="/static/manifest.json">
+"""
+st.markdown(manifest_html, unsafe_allow_html=True)
+
+# Register Service Worker
+sw_js = """
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/static/service-worker.js')
+        .then(reg => console.log("Service Worker Registered!"))
+        .catch(err => console.log("Service Worker Registration Failed:", err));
+    });
+  }
+</script>
+"""
+st.markdown(sw_js, unsafe_allow_html=True)
+
 # ----------------------
 # SESSION STATE MANAGEMENT
 # ----------------------
@@ -76,7 +96,7 @@ def manage_conversation(role, text):
 # ----------------------
 # MAIN INTERFACE
 # ----------------------
-st.title("🏥 DOC: NDUDZO - Digital Hospital")
+st.title("\U0001F3E5 DOC: NDUDZO - Digital Hospital")
 
 # Display Chat History
 for message in st.session_state.conversation:
@@ -90,16 +110,14 @@ for message in st.session_state.conversation:
 # ----------------------
 with st.form("chat_form", clear_on_submit=True):
     user_input = st.text_input("Describe your symptoms or ask a question:", placeholder="Type your message here...")
-    submitted = st.form_submit_button("📩 Send")
+    submitted = st.form_submit_button("\U0001F4E9 Send")
 
 if submitted and user_input:
     manage_conversation("user", user_input)
 
-    # 🔥 FIX: System Instructions are now properly used
     sys_prompt = f"""
     You are Doctor Ndudzo, an advanced AI medical assistant.
-    📅 Current Date: {datetime.now().strftime("%Y-%m-%d %H:%M")}
-    
+    \U0001F4C5 Current Date: {datetime.now().strftime("%Y-%m-%d %H:%M")}
     - Provide evidence-based medical information.
     - Maintain strict confidentiality.
     - Respond in a professional, compassionate tone.
@@ -109,11 +127,10 @@ if submitted and user_input:
     - ✅ You can help with anything, as long as it’s not evil.
     """
 
-    # Generate AI Response (🔥 NOW USING SYSTEM PROMPT PROPERLY)
     try:
         model = genai.GenerativeModel("gemini-2.0-flash")
         response = model.generate_content(
-            [sys_prompt, user_input]  # ✅ Forces the AI to follow instructions
+            [sys_prompt, user_input]
         )
 
         if hasattr(response, "text"):
