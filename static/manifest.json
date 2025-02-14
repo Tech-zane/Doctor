@@ -1,38 +1,38 @@
 {
-  "short_name": "DigiDoc",
-  "name": "DigiDoc - Digital Hospital Chatbot",
-  "description": "A medical chatbot to help you with healthcare advice.",
-  "start_url": "https://ndudzo.streamlit.app/",
-  "scope": "/", // Or "/tech-zane/doctor/main/" if you prefer
-  "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#0072B5",
-  "icons": [
-    {
-      "src": "icons/icon-192x192.png", // Correct (relative to static)
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "icons/icon-512x512.png", // Correct (relative to static)
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
-  ],
-  "screenshots": [
-    {
-      "src": "screenshot/Screenshot1.png", // Correct path! (relative to static)
-      "sizes": "1918x990",
-      "type": "image/png",
-      "form_factor": "wide"
-    },
-    {
-      "src": "screenshot/screenshot2.png", // Correct path! (relative to static)
-      "sizes": "553x969",
-      "type": "image/png",
-      "form_factor": "narrow"
-    }
-  ]
+    "short_name": "DigiDoc",
+    "name": "DigiDoc - Digital Hospital Chatbot",
+    "description": "A medical chatbot to help you with healthcare advice.",
+    "start_url": "https://ndudzo.streamlit.app/",
+    "scope": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#0072B5",
+    "icons": [
+        {
+            "src": "icons/icon-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "icons/icon-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ],
+    "screenshots": [
+        {
+            "src": "screenshot/Screenshot1.png",
+            "sizes": "1918x990",
+            "type": "image/png",
+            "form_factor": "wide"
+        },
+        {
+            "src": "screenshot/screenshot2.png",
+            "sizes": "553x969",
+            "type": "image/png",
+            "form_factor": "narrow"
+        }
+    ]
 }
