@@ -43,7 +43,7 @@ if "conversation" not in st.session_state:
 
 def manage_conversation(role, text):
     """Adds a message to the conversation and keeps the history manageable."""
-    MAX_HISTORY = 10
+    MAX_HISTORY = 10  # Or adjust as needed
     st.session_state.conversation.append({"role": role, "text": text})
     if len(st.session_state.conversation) > MAX_HISTORY:
         st.session_state.conversation.pop(0)
@@ -82,12 +82,17 @@ st.markdown(chat_css, unsafe_allow_html=True)
 # ----------------------
 st.title("\U0001F3E5 DOC: NDUDZO - Digital Hospital")
 
-# Display Chat History (reversed for better flow)
-for message in reversed(st.session_state.conversation):  # Reverse the order
-    if message["role"] == "user":
-        st.markdown(f'<div class="user-box"><strong>You:</strong> {message["text"]}</div>', unsafe_allow_html=True)
-    else:
-        st.markdown(f'<div class="chatbot-box"><strong>Doctor:</strong> {message["text"]}</div>', unsafe_allow_html=True)
+# ----------------------
+# CHAT DISPLAY (Corrected)
+# ----------------------
+chat_container = st.container()
+
+with chat_container:
+    for message in st.session_state.conversation:
+        if message["role"] == "user":
+            st.markdown(f'<div class="user-box"><strong>You:</strong> {message["text"]}</div>', unsafe_allow_html=True)
+        else:
+            st.markdown(f'<div class="chatbot-box"><strong>Doctor:</strong> {message["text"]}</div>', unsafe_allow_html=True)
 
 
 # ----------------------
@@ -120,11 +125,12 @@ if submitted and user_input:
 
         chatbot_response = response.text if hasattr(response, "text") else "I couldn't process that request. Please try again."
         manage_conversation("chatbot", chatbot_response)
+
     except Exception as e:
         logger.error(f"❌ API Error: {str(e)}")
         manage_conversation("chatbot", "Technical issue - please try again.")
 
-    st.rerun()
+    # No st.rerun() here!
 
 # ----------------------
 # SYSTEM DIAGNOSTICS
@@ -139,4 +145,4 @@ with st.expander("⚙️ System Diagnostics", expanded=False):
 
     if st.button("🔄 Clear Conversation History"):
         st.session_state.conversation = []
-        st.rerun()
+        st.experimental_rerun()  # Keep this for clearing history
