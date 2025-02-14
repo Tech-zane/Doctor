@@ -85,15 +85,17 @@ st.title("\U0001F3E5 DOC: NDUDZO - Digital Hospital")
 # ----------------------
 # CHAT DISPLAY (Corrected)
 # ----------------------
-chat_container = st.container()
+chat_container = st.empty()  # Use st.empty() to create a placeholder
 
-with chat_container:
-    for message in st.session_state.conversation:
-        if message["role"] == "user":
-            st.markdown(f'<div class="user-box"><strong>You:</strong> {message["text"]}</div>', unsafe_allow_html=True)
-        else:
-            st.markdown(f'<div class="chatbot-box"><strong>Doctor:</strong> {message["text"]}</div>', unsafe_allow_html=True)
+def display_chat():
+    with chat_container.container():  # Use the container to display messages
+        for message in st.session_state.conversation:
+            if message["role"] == "user":
+                st.markdown(f'<div class="user-box"><strong>You:</strong> {message["text"]}</div>', unsafe_allow_html=True)
+            else:
+                st.markdown(f'<div class="chatbot-box"><strong>Doctor:</strong> {message["text"]}</div>', unsafe_allow_html=True)
 
+display_chat()  # Initial display
 
 # ----------------------
 # CHAT INPUT SYSTEM
@@ -130,7 +132,7 @@ if submitted and user_input:
         logger.error(f"❌ API Error: {str(e)}")
         manage_conversation("chatbot", "Technical issue - please try again.")
 
-    # No st.rerun() here!
+    display_chat()  # Crucial: Call display_chat() to update the container
 
 # ----------------------
 # SYSTEM DIAGNOSTICS
