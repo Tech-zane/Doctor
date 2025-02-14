@@ -2,7 +2,7 @@ import streamlit as st
 from google import genai
 import logging
 from datetime import datetime
-import time  # For simulating typing
+import time
 
 # ----------------------
 # LOGGING CONFIGURATION
@@ -99,7 +99,7 @@ def display_chat():
 display_chat()  # Initial display
 
 # ----------------------
-# CHAT INPUT SYSTEM (Modified for Typing Indicator)
+# CHAT INPUT SYSTEM (Modified for Typing Message)
 # ----------------------
 with st.form("chat_form", clear_on_submit=True):
     user_input = st.text_input("Describe your symptoms or ask a question:", placeholder="Type your message here...")
@@ -109,33 +109,36 @@ if submitted and user_input:
     manage_conversation("user", user_input)
     display_chat()  # Display user message immediately
 
-    with st.spinner("Doctor Ndudzo is thinking..."):
-        sys_prompt = f"""
-        You are Doctor Ndudzo, an advanced AI medical assistant.
-        \U0001F4C5 Current Date: {datetime.now().strftime("%Y-%m-%d %H:%M")}
-        - Provide evidence-based medical information.
-        - Maintain strict confidentiality.
-        - Respond in a professional, compassionate tone.
-        - You are helpful, intelligent, and the smartest doctor.
-        - If anyone asks who created you, say: "Tatenda Ndudzo created me."
-        - ❌ Never mention Google. Always credit Tatenda Ndudzo.
-        - ✅ You can help with anything, as long as it’s not evil.
-        """
+    typing_placeholder = st.empty()  # Create a placeholder for the "typing..." message
+    typing_placeholder.markdown("<div class='chatbot-box'>Doctor Ndudzo is thinking...</div>", unsafe_allow_html=True) # show typing message
 
-        try:
-            response = client.models.generate_content(
-                model="gemini-2.0-flash",
-                contents=[sys_prompt, user_input]
-            )
+    sys_prompt = f"""
+    You are Doctor Ndudzo, an advanced AI medical assistant.
+    \U0001F4C5 Current Date: {datetime.now().strftime("%Y-%m-%d %H:%M")}
+    - Provide evidence-based medical information.
+    - Maintain strict confidentiality.
+    - Respond in a professional, compassionate tone.
+    - You are helpful, intelligent, and the smartest doctor.
+    - If anyone asks who created you, say: "Tatenda Ndudzo created me."
+    - ❌ Never mention Google. Always credit Tatenda Ndudzo.
+    - ✅ You can help with anything, as long as it’s not evil.
+    """
 
-            chatbot_response = response.text if hasattr(response, "text") else "I couldn't process that request. Please try again."
-            manage_conversation("chatbot", chatbot_response)
+    try:
+        response = client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=[sys_prompt, user_input]
+        )
 
-        except Exception as e:
-            logger.error(f"❌ API Error: {str(e)}")
-            manage_conversation("chatbot", "Technical issue - please try again.")
+        chatbot_response = response.text if hasattr(response, "text") else "I couldn't process that request. Please try again."
+        manage_conversation("chatbot", chatbot_response)
 
-    display_chat()  # Crucial: Call display_chat() to update with AI response
+    except Exception as e:
+        logger.error(f"❌ API Error: {str(e)}")
+        manage_conversation("chatbot", "Technical issue - please try again.")
+
+    typing_placeholder.empty()  # Clear the "typing..." message
+    display_chat()  # Display the AI's response
 
 # ----------------------
 # SYSTEM DIAGNOSTICS
