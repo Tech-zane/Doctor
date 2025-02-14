@@ -1,9 +1,7 @@
 import streamlit as st
-import streamlit.components.v1 as components
 from google import genai
-import os
-from datetime import datetime
 import logging
+from datetime import datetime
 
 # ----------------------
 # LOGGING CONFIGURATION
@@ -26,59 +24,16 @@ st.set_page_config(
 # ----------------------
 try:
     API_KEY = st.secrets["GEMINI_API_KEY"]
-    genai.configure(api_key=API_KEY)
+    client = genai.Client(api_key=API_KEY)
     logger.info("✅ API key loaded successfully.")
 except KeyError:
     st.error("❌ Missing API Key! Configure GEMINI_API_KEY in secrets.toml.")
     logger.error("Missing API Key in secrets.toml.")
     st.stop()
-
-# ----------------------
-# CUSTOM CHAT STYLING
-# ----------------------
-chat_css = """
-<style>
-.user-box {
-    background: #0d1b2a;
-    padding: 1.2rem;
-    border-radius: 15px;
-    margin: 1rem 0;
-    max-width: 80%;
-    float: right;
-    color: white;
-}
-.chatbot-box {
-    background: #1a1a1a;
-    padding: 1.2rem;
-    border-radius: 15px;
-    margin: 1rem 0;
-    max-width: 80%;
-    float: left;
-    color: white;
-}
-</style>
-"""
-st.markdown(chat_css, unsafe_allow_html=True)
-
-# Inject manifest.json into HTML
-manifest_html = """
-<link rel="manifest" href="manifest.json">
-"""
-st.markdown(manifest_html, unsafe_allow_html=True)
-
-# Register Service Worker
-sw_js = """
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('service-worker.js')
-        .then(reg => console.log("Service Worker Registered!"))
-        .catch(err => console.log("Service Worker Registration Failed:", err));
-    });
-  }
-</script>
-"""
-st.markdown(sw_js, unsafe_allow_html=True)
+except Exception as e:
+    st.error(f"❌ Error initializing API: {str(e)}")
+    logger.error(f"API Initialization Error: {str(e)}")
+    st.stop()
 
 # ----------------------
 # SESSION STATE MANAGEMENT
@@ -128,11 +83,12 @@ if submitted and user_input:
     """
 
     try:
-        model = genai.GenerativeModel("gemini-2.0-flash")
-        response = model.generate_content(
-            [sys_prompt, user_input]
+        # Use the correct method from the API documentation
+        response = client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=[sys_prompt, user_input]
         )
-
+        
         chatbot_response = response.text if hasattr(response, "text") else "I couldn't process that request. Please try again."
         manage_conversation("chatbot", chatbot_response)
     except Exception as e:
@@ -140,25 +96,6 @@ if submitted and user_input:
         manage_conversation("chatbot", "Technical issue - please try again.")
 
     st.rerun()
-
-# ----------------------
-# AUTO-SCROLL FUNCTION
-# ----------------------
-components.html(
-    """
-    <script>
-    function scrollToBottom() {
-        var chatContainer = document.querySelector(".stApp");
-        if (chatContainer) {
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        }
-    }
-    document.addEventListener("DOMContentLoaded", scrollToBottom);
-    window.onload = scrollToBottom;
-    </script>
-    """,
-    height=0
-)
 
 # ----------------------
 # SYSTEM DIAGNOSTICS
