@@ -20,7 +20,7 @@
       "type": "image/png",
       "purpose": "any maskable"
     }
-  ]
+  ],
   "screenshots": [
     {
       "src": "/static/screenshot/Screenshot1.png",  // Path to your screenshot
