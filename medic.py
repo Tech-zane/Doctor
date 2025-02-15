@@ -19,6 +19,17 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
+
+hide_streamlit_style = """
+            <style>
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            header {visibility: hidden;}
+            .stApp { margin-top: -50px; padding-top: 0rem; }
+            </style>
+            """
+st.markdown(hide_streamlit_style, unsafe_allow_html=True) 
+
 # ----------------------
 # API KEY CONFIGURATION (From Secrets)
 # ----------------------
