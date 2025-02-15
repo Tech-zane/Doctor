@@ -221,7 +221,7 @@ if submitted and user_input:
         response = client.models.generate_content(
             model="gemini-2.0-flash",
             contents=[sys_prompt, user_input],
-            generation_config={
+            config=types.GenerateContentConfig{
                 "temperature": 0.7,          # Range: 0-1 (0=deterministic, 1=creative)
                 "max_output_tokens": 500,    # Range: 1-8192
             }
