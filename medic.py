@@ -19,33 +19,31 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-
-hide_ui_style = """
+st.markdown("""
 <style>
-  /* Remove Streamlit footer */
-  footer[data-testid="stFooter"] {
-    visibility: hidden !important;
-    height: 0 !important;
-  }
+    /* Hide "Hosted with Streamlit" footer */
+    footer[data-testid="stFooter"] {
+        display: none !important;
+    }
 
-  /* Remove profile/account menu (your profile pic) */
-  [data-testid="stSidebarUserContent"] {
-    display: none !important;
-  }
+    /* Hide profile picture and menu in sidebar */
+    [data-testid="stSidebarUserContent"] {
+        display: none !important;
+    }
 
-  /* Remove header spacing */
-  .stApp {
-    margin-top: -80px !important;
-    padding-top: 0rem !important;
-  }
+    /* Hide hamburger menu (top-right corner) */
+    button[title="View fullscreen"] {
+        display: none !important;
+    }
 
-  /* Hide hamburger menu */
-  #MainMenu {
-    visibility: hidden !important;
-  }
+    /* Adjust spacing caused by hidden elements */
+    .stApp {
+        margin-top: -50px !important;
+        padding-top: 0 !important;
+    }
 </style>
-"""
-st.markdown(hide_ui_style, unsafe_allow_html=True) 
+""", unsafe_allow_html=True)
+
 
 # ----------------------
 # API KEY CONFIGURATION (From Secrets)
