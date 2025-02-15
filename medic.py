@@ -25,10 +25,12 @@ hide_streamlit_style = """
             footer {visibility: hidden;}
             header {visibility: hidden;}
             .stApp { margin-top: -50px; padding-top: 0rem; }
-            .main .block-container {
-                max-width: 1400px;  /* Adjust width as needed */
-                padding-top: 20px;
-                padding-bottom: 20px;
+            .stApp {
+                max-width: 90%;
+                padding: 3rem 1rem 10rem;
+            }
+            .block-container {
+                max-width: 90%;
             }
             </style>
             """
