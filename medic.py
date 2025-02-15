@@ -19,30 +19,15 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-st.markdown("""
-<style>
-    /* Hide "Hosted with Streamlit" footer */
-    footer[data-testid="stFooter"] {
-        display: none !important;
-    }
-
-    /* Hide profile picture and menu in sidebar */
-    [data-testid="stSidebarUserContent"] {
-        display: none !important;
-    }
-
-    /* Hide hamburger menu (top-right corner) */
-    button[title="View fullscreen"] {
-        display: none !important;
-    }
-
-    /* Adjust spacing caused by hidden elements */
-    .stApp {
-        margin-top: -50px !important;
-        padding-top: 0 !important;
-    }
-</style>
-""", unsafe_allow_html=True)
+hide_streamlit_style = """
+            <style>
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            header {visibility: hidden;}
+            .stApp { margin-top: -50px; padding-top: 0rem; }
+            </style>
+            """
+st.markdown(hide_streamlit_style, unsafe_allow_html=True) 
 
 
 # ----------------------
