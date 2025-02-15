@@ -89,26 +89,51 @@ def manage_conversation(role, text):
 # ----------------------
 chat_css = """
 <style>
-.user-box {
-    background: #4CAF50; /* Green for user */
-    padding: 1.2rem;
-    border-radius: 15px;
-    margin: 1rem 0;
-    max-width: 70%;
-    float: right;
-    color: white;
-    text-align: right;
-}
-.chatbot-box {
-    background: #2196F3; /* Blue for AI */
-    padding: 1.2rem;
-    border-radius: 15px;
-    margin: 1rem 0;
-    max-width: 70%;
-    float: left;
-    color: white;
-    text-align: left;
-}
+    .stChatMessage {
+        width: 100% !important;
+        padding: 0 1rem !important;
+    }
+
+    .user-box {
+        background: #4CAF50;
+        padding: 1.2rem;
+        border-radius: 15px 15px 0 15px;
+        margin: 1rem 0;
+        max-width: 80%;
+        margin-left: auto;
+        color: white;
+        text-align: left;
+        word-wrap: break-word;
+        white-space: pre-wrap;
+        box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .chatbot-box {
+        background: #2196F3;
+        padding: 1.2rem;
+        border-radius: 15px 15px 15px 0;
+        margin: 1rem 0;
+        max-width: 80%;
+        margin-right: auto;
+        color: white;
+        text-align: left;
+        word-wrap: break-word;
+        white-space: pre-wrap;
+        box-shadow: -2px 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .stTextArea textarea {
+        min-height: 60px !important;
+        max-height: 200px !important;
+        overflow-y: auto !important;
+        resize: vertical !important;
+        line-height: 1.5 !important;
+        padding: 12px !important;
+    }
+
+    .stTextArea label {
+        display: none !important;
+    }
 </style>
 """
 st.markdown(chat_css, unsafe_allow_html=True)
