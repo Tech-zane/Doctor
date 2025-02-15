@@ -20,14 +20,31 @@ st.set_page_config(
 )
 
 
-hide_streamlit_style = """
-            <style>
-            #MainMenu {visibility: hidden;}
-            footer {visibility: hidden;}
-            header {visibility: hidden;}
-            .stApp { margin-top: -50px; padding-top: 0rem; }
-            </style>
-            """
+hide_ui_style = """
+<style>
+  /* Remove Streamlit footer */
+  footer[data-testid="stFooter"] {
+    visibility: hidden !important;
+    height: 0 !important;
+  }
+
+  /* Remove profile/account menu (your profile pic) */
+  [data-testid="stSidebarUserContent"] {
+    display: none !important;
+  }
+
+  /* Remove header spacing */
+  .stApp {
+    margin-top: -80px !important;
+    padding-top: 0rem !important;
+  }
+
+  /* Hide hamburger menu */
+  #MainMenu {
+    visibility: hidden !important;
+  }
+</style>
+"""
 st.markdown(hide_streamlit_style, unsafe_allow_html=True) 
 
 # ----------------------
