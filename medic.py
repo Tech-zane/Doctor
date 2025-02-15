@@ -24,13 +24,31 @@ hide_streamlit_style = """
             #MainMenu {visibility: hidden;}
             footer {visibility: hidden;}
             header {visibility: hidden;}
+            /* Default styles (desktop) */
             .stApp {
-                max-width: 90%;
-                padding: 3rem 1rem 10rem;
-                margin: auto;
+                padding: 2rem 1rem !important;
+                margin: auto !important;
+                max-width: 800px !important;
             }
-            .block-container {
-                max-width: 90%;
+            
+            /* Mobile-first override */
+            @media (max-width: 600px) {
+                .stApp {
+                    max-width: 100% !important;
+                    padding: 1rem 0.5rem !important;
+                }
+                
+                /* Full-width input on mobile */
+                .stTextInput > div {
+                    max-width: 100% !important;
+                    padding: 0 !important;
+                }
+                
+                /* Wider button on mobile */
+                .stButton > button {
+                    width: 100% !important;
+                    margin: 1rem 0 !important;
+                }
             }
             </style>
             """
