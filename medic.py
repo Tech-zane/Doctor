@@ -220,7 +220,12 @@ if submitted and user_input:
     try:
         response = client.models.generate_content(
             model="gemini-2.0-flash",
-            contents=[sys_prompt, user_input]  # Include conversation history and user input
+            contents=[sys_prompt, user_input],
+            generation_config={
+                "temperature": 0.3,          # Range: 0-1 (0=deterministic, 1=creative)
+                "max_output_tokens": 2000,    # Range: 1-8192
+                "top_p": 0.95                # Range: 0-1
+            }
         )
 
         chatbot_response = response.text if hasattr(response, "text") else "I couldn't process that request. Please try again."
