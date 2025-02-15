@@ -2,6 +2,7 @@ import streamlit as st
 from google import genai
 import logging
 from datetime import datetime
+from google.genai import types
 
 # ----------------------
 # LOGGING CONFIGURATION
