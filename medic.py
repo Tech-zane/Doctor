@@ -30,7 +30,7 @@ hide_streamlit_style = """
                 padding: 3rem 1rem 10rem;
             }
             .block-container {
-                max-width: 90%;
+                max-width: 80%;
             }
             </style>
             """
