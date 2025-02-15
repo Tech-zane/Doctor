@@ -170,7 +170,7 @@ if submitted and user_input:
     display_chat()
 
     typing_placeholder = st.empty()
-    typing_placeholder.markdown("<div class='chatbot-box'>Doctor Ndudzo is thinking...</div>", unsafe_allow_html=True)
+    typing_placeholder.markdown("<div class='chatbot-box'>Doctor Ndudzo is thinking...🩺</div>", unsafe_allow_html=True)
 
     # Improved Conversation History Management
     conversation_history = ""
