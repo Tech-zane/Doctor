@@ -26,7 +26,7 @@ hide_streamlit_style = """
             header {visibility: hidden;}
             .stApp { margin-top: -50px; padding-top: 0rem; }
             .main .block-container {
-                max-width: 900px;  /* Adjust width as needed */
+                max-width: 1400px;  /* Adjust width as needed */
                 padding-top: 20px;
                 padding-bottom: 20px;
             }
