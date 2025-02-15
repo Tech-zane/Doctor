@@ -28,7 +28,7 @@ hide_streamlit_style = """
             .stApp {
                 padding: 2rem 1rem !important;
                 margin: auto !important;
-                max-width: 800px !important;
+                max-width: 1600px !important;
             }
             
             /* Mobile-first override */
