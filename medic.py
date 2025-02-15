@@ -148,7 +148,7 @@ with st.form("chat_form", clear_on_submit=True):
     with input_col:
         user_input = st.text_area(
             "Type your message:",
-            placeholder="Describe your symptoms or ask a question...\n(Shift+Enter for new line)",
+            placeholder="Describe your symptoms or ask a question....",
             label_visibility="collapsed",
             height=100,
             key="input_area"
@@ -161,7 +161,7 @@ if submitted and user_input.strip():
     manage_conversation("user", user_input.strip())
     display_chat()
     
-    with st.spinner("Doctor Ndudzo is thinking..."):
+    with st.spinner("Doctor Ndudzo is thinking...🩺"):
         try:
             response = client.models.generate_content(
                 model="gemini-2.0-flash",
