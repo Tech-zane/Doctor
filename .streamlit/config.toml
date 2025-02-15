@@ -1,3 +1,12 @@
 [server]
 enableCORS = false
 enableXsrfProtection = false
+
+[theme]
+base = "dark"
+
+[client]
+showSidebarNavigation = false
+showFooter = false
+showToolbar = false
+showMenu = false
