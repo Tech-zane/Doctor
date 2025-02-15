@@ -27,7 +27,7 @@ hide_streamlit_style = """
             .stApp { margin-top: -50px; padding-top: 0rem; }
             .stApp {
                 max-width: 80%;
-                padding: 3rem 1rem 10rem;
+
             }
             .block-container {
                 max-width: 80%;
