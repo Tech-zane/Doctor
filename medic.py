@@ -24,13 +24,12 @@ hide_streamlit_style = """
             #MainMenu {visibility: hidden;}
             footer {visibility: hidden;}
             header {visibility: hidden;}
-            .stApp { margin-top: -50px; padding-top: 0rem; }
             .stApp {
-                max-width: 80%;
-
+                max-width: 90%;
+                padding: 3rem 1rem 10rem;
             }
             .block-container {
-                max-width: 80%;
+                max-width: 90%;
             }
             </style>
             """
