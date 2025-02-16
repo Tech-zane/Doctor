@@ -225,7 +225,7 @@ if submitted and user_input:
             contents=[sys_prompt, user_input],
             config=types.GenerateContentConfig(
                 temperature = 0.7,          # Range: 0-1 (0=deterministic, 1=creative)
-                max_output_tokens = 500    # Range: 1-8192
+                max_output_tokens = 500 
             )
         )
 
